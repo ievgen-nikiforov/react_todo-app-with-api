@@ -280,14 +280,16 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
-          <button
-            type="button"
-            className={classNames('todoapp__toggle-all', {
-              active: istoggleAll,
-            })}
-            data-cy="ToggleAllButton"
-            onClick={istoggleAll ? handleUncheckAll : handleCheckToNotToggle}
-          />
+          {todos.length > 0 && (
+            <button
+              type="button"
+              className={classNames('todoapp__toggle-all', {
+                active: istoggleAll,
+              })}
+              data-cy="ToggleAllButton"
+              onClick={istoggleAll ? handleUncheckAll : handleCheckToNotToggle}
+            />
+          )}
 
           {/* Add a todo on form submit */}
           <form onSubmit={handleAddTodo}>
