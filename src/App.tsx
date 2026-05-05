@@ -29,7 +29,6 @@ enum ErrorMessage {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loading, setLoading] = useState(false);
   const completedTodosNumber = todos.filter(todo => !todo.completed).length;
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.All);
@@ -115,7 +114,6 @@ export const App: React.FC = () => {
       title,
       completed: false,
     };
-    setTempTodo(newTemp);
     setLoading(true);
 
     try {
@@ -132,7 +130,6 @@ export const App: React.FC = () => {
       return null;
     } finally {
       setLoading(false);
-      setTempTodo(null);
     }
   };
   const deleteTodo = async (id: number) => {
