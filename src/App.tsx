@@ -46,6 +46,7 @@ export const App: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [tempTitle, setTempTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const closeError = () => {
     setErrorMessage(ErrorMessage.Empty);
   };
@@ -220,49 +221,52 @@ export const App: React.FC = () => {
     setTempTitle(todo.title);
   };
   const handleSubmit = async (id: number) => {
+    if (isSubmitting) return; // ✅ prevent double call
+
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
 
     const trimmed = tempTitle.trim();
 
-    // same title → cancel
-    if (trimmed === todo.title) {
-      setEditingId(null);
-      return;
-    }
+    setIsSubmitting(true);
 
-    // empty → delete
-    if (!trimmed) {
-      try {
+    try {
+      // same title → cancel
+      if (trimmed === todo.title) {
+        setEditingId(null);
+        return;
+      }
+
+      // empty → delete
+      if (!trimmed) {
         setDeleteTodoId(id);
-        await deleteTodoApi(id);
 
+        await deleteTodoApi(id);
         setTodos(prev => prev.filter(t => t.id !== id));
 
         setEditingId(null);
-      } catch {
-        setErrorMessage(ErrorMessage.DeleteError);
-        setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
-      } finally {
-        setDeleteTodoId(null);
+        return;
       }
 
-      return;
-    }
+      // update
+      setChangeStatusTodoId(id);
 
-    // update title
-    try {
-      setChangeStatusTodoId(id); // reuse loader
       const updated = await updateTodoApi(id, trimmed);
 
       setTodos(prev =>
         prev.map(t => (t.id === id ? { ...t, title: updated.title } : t)),
       );
+
+      setEditingId(null);
     } catch {
-      setErrorMessage(ErrorMessage.UpdateError);
+      setErrorMessage(
+        trimmed ? ErrorMessage.UpdateError : ErrorMessage.DeleteError,
+      );
       setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
     } finally {
+      setIsSubmitting(false);
       setChangeStatusTodoId(null);
+      setDeleteTodoId(null);
     }
   };
   const handleKeyDown = (e: React.KeyboardEvent, id: number) => {
