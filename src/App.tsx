@@ -141,6 +141,7 @@ export const App: React.FC = () => {
       await deleteTodoApi(id);
 
       setTodos(prev => prev.filter(todo => todo.id !== id));
+      setEditingId(null);
     } catch (error) {
       setErrorMessage(ErrorMessage.DeleteError);
       setTimeout(() => {
@@ -259,7 +260,6 @@ export const App: React.FC = () => {
       setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
     } finally {
       setChangeStatusTodoId(null);
-      setEditingId(null);
     }
   };
   const handleKeyDown = (e: React.KeyboardEvent, id: number) => {
@@ -308,7 +308,7 @@ export const App: React.FC = () => {
           {/* This is a completed todo */}
           {filteredTodos.map((todo, key) => (
             <div
-              key={key}
+              key={todo.id}
               data-cy="Todo"
               className={classNames('todo', { completed: todo.completed })}
             >
