@@ -11,13 +11,12 @@ import {
   updateTodo as updateTodoApi,
 } from './api/todos';
 import { Todo } from './types/Todo';
-import classNames from 'classnames';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
 
-enum Filter {
+export enum Filter {
   All = 'All',
   Active = 'Active',
   Completed = 'Completed',

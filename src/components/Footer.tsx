@@ -1,11 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Filter } from '../App';
 
 type Props = {
   count: number;
-  selectedFilter: string;
+  selectedFilter: Filter;
   isAnyCompleted: boolean;
-  onFilterChange: (filter: any) => void;
+  onFilterChange: (filter: Filter) => void;
   onClearCompleted: () => void;
 };
 
@@ -20,7 +21,7 @@ export const Footer: React.FC<Props> = ({
     <span data-cy="TodosCounter">{count} items left</span>
 
     <nav data-cy="Filter">
-      {['All', 'Active', 'Completed'].map(f => (
+      {Object.values(Filter).map(f => (
         <a
           key={f}
           href="#/"
