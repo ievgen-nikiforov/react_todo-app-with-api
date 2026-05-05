@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
-
+/* eslint-disable jsx-a11y/label-has-associated-control */
 type Props = {
   todo: Todo;
   isEditing: boolean;
