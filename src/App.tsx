@@ -323,6 +323,7 @@ export const App: React.FC = () => {
               </label>
               {editingId === todo.id ? (
                 <input
+                  data-cy="TodoTitleField"
                   className="todo__title"
                   value={tempTitle}
                   onChange={e => setTempTitle(e.target.value)}
