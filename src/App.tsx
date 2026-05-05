@@ -236,14 +236,17 @@ export const App: React.FC = () => {
       try {
         setDeleteTodoId(id);
         await deleteTodoApi(id);
+
         setTodos(prev => prev.filter(t => t.id !== id));
+
+        setEditingId(null);
       } catch {
         setErrorMessage(ErrorMessage.DeleteError);
         setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
       } finally {
         setDeleteTodoId(null);
-        setEditingId(null);
       }
+
       return;
     }
 
@@ -306,7 +309,7 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           {/* This is a completed todo */}
-          {filteredTodos.map((todo, key) => (
+          {filteredTodos.map(todo => (
             <div
               key={todo.id}
               data-cy="Todo"
