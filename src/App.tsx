@@ -41,11 +41,14 @@ export const App: React.FC = () => {
   const [changeStatusTodoId, setChangeStatusTodoId] = useState<number | null>(
     null,
   );
+  const [ addTodoLoading, setAddTodoLoading] = useState<number | null>(
+    null,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [istoggleAll, setIsToggleAll] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [tempTitle, setTempTitle] = useState('');
-
+const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const closeError = () => {
     setErrorMessage(ErrorMessage.Empty);
   };
@@ -99,39 +102,42 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
   const handleAddTodo = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!inputRef.current?.value.trim()) {
-      setErrorMessage(ErrorMessage.TitleError);
-      setTimeout(() => {
-        setErrorMessage(ErrorMessage.Empty);
-      }, 3000);
-      return;
-    }
-    const title = inputRef.current.value.trim();
-    const newTemp: Todo = {
-      id: 0, // temporary ID
-      userId: USER_ID,
-      title,
-      completed: false,
-    };
-    setLoading(true);
+  event.preventDefault();
 
-    try {
-      const addTodoPost: Todo = await addTodoApi(newTemp);
-      if (inputRef.current) {
-        inputRef.current.value = '';
-      }
-      setTodos([...todos, addTodoPost]);
-    } catch (error) {
-      setErrorMessage(ErrorMessage.AddError);
-      setTimeout(() => {
-        setErrorMessage(ErrorMessage.Empty);
-      }, 3000);
-      return null;
-    } finally {
-      setLoading(false);
-    }
+  const value = inputRef.current?.value.trim();
+
+  if (!value) {
+    setErrorMessage(ErrorMessage.TitleError);
+    setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
+    return;
+  }
+
+  const temp: Todo = {
+    id: 0,
+    userId: USER_ID,
+    title: value,
+    completed: false,
   };
+
+  setTempTodo(temp);
+  setLoading(true);
+
+  try {
+    const created = await addTodoApi(temp);
+
+    setTodos(prev => [...prev, created]);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  } catch {
+    setErrorMessage(ErrorMessage.AddError);
+    setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
+  } finally {
+    setTempTodo(null);
+    setLoading(false);
+  }
+};
   const deleteTodo = async (id: number) => {
     setDeleteTodoId(id);
     try {
@@ -360,6 +366,31 @@ export const App: React.FC = () => {
               </div>
             </div>
           ))}
+          {tempTodo && (
+  <div
+    data-cy="Todo"
+    className="todo"
+  >
+    <label className="todo__status-label">
+      <input
+        type="checkbox"
+        className="todo__status"
+        checked={false}
+        disabled
+      />
+    </label>
+
+    <span className="todo__title">{tempTodo.title}</span>
+
+    <div
+      data-cy="TodoLoader"
+      className="modal overlay is-active"
+    >
+      <div className="modal-background has-background-white-ter" />
+      <div className="loader" />
+    </div>
+  </div>
+)}
         </section>
 
         {/* Hide the footer if there are no todos */}
