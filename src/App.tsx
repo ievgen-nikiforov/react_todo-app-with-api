@@ -12,6 +12,10 @@ import {
 } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { TodoList } from './components/TodoList';
+import { ErrorNotification } from './components/ErrorNotification';
 
 enum Filter {
   All = 'All',
@@ -285,196 +289,46 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
-          {todos.length > 0 && (
-            <button
-              type="button"
-              className={classNames('todoapp__toggle-all', {
-                active: istoggleAll,
-              })}
-              data-cy="ToggleAllButton"
-              onClick={istoggleAll ? handleUncheckAll : handleCheckToNotToggle}
-            />
-          )}
+        <Header
+          hasTodos={todos.length > 0}
+          isToggleAll={istoggleAll}
+          loading={loading}
+          inputRef={inputRef}
+          onToggleAll={() =>
+            istoggleAll ? handleUncheckAll() : handleCheckToNotToggle()
+          }
+          onSubmit={handleAddTodo}
+        />
 
-          {/* Add a todo on form submit */}
-          <form onSubmit={handleAddTodo}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={inputRef}
-              disabled={loading}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main" data-cy="TodoList">
-          {/* This is a completed todo */}
-          {filteredTodos.map(todo => (
-            <div
-              key={todo.id}
-              data-cy="Todo"
-              className={classNames('todo', { completed: todo.completed })}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  checked={todo.completed}
-                  onClick={() => statusTodo(todo.id, !todo.completed)}
-                />
-              </label>
-              {editingId === todo.id ? (
-                <input
-                  data-cy="TodoTitleField"
-                  className="todo__title"
-                  value={tempTitle}
-                  onChange={e => setTempTitle(e.target.value)}
-                  onBlur={() => handleSubmit(todo.id)}
-                  onKeyDown={e => handleKeyDown(e, todo.id)}
-                  onKeyUp={handleKeyUp}
-                  autoFocus
-                />
-              ) : (
-                <>
-                  <span
-                    data-cy="TodoTitle"
-                    className="todo__title"
-                    onDoubleClick={() => handleDoubleClick(todo)}
-                  >
-                    {todo.title}
-                  </span>
-
-                  {/* Remove button appears only on hover */}
-                  <button
-                    type="button"
-                    className="todo__remove"
-                    data-cy="TodoDelete"
-                    onClick={() => deleteTodo(todo.id)}
-                  >
-                    ×
-                  </button>
-                </>
-              )}
-              {/* overlay will cover the todo while it is being deleted or updated */}
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active':
-                    todo.id === deleteTodoId || todo.id === changeStatusTodoId,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-          {tempTodo && (
-            <div data-cy="Todo" className="todo">
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                  checked={false}
-                  disabled
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
+        <TodoList
+          todos={filteredTodos}
+          editingId={editingId}
+          tempTitle={tempTitle}
+          deleteTodoId={deleteTodoId}
+          changeStatusTodoId={changeStatusTodoId}
+          tempTodo={tempTodo}
+          onToggle={statusTodo}
+          onDelete={deleteTodo}
+          onDoubleClick={handleDoubleClick}
+          onChangeTitle={setTempTitle}
+          onSubmit={handleSubmit}
+          onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
+        />
 
         {/* Hide the footer if there are no todos */}
-        {todos.length ? (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {completedTodosNumber} items left
-            </span>
-
-            {/* Active link should have the 'selected' class */}
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={classNames('filter__link', {
-                  selected: selectedFilter === 'All',
-                })}
-                data-cy="FilterLinkAll"
-                onClick={() => selectNewFilter(Filter.All)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={classNames('filter__link', {
-                  selected: selectedFilter === 'Active',
-                })}
-                data-cy="FilterLinkActive"
-                onClick={() => selectNewFilter(Filter.Active)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={classNames('filter__link', {
-                  selected: selectedFilter === 'Completed',
-                })}
-                data-cy="FilterLinkCompleted"
-                onClick={() => selectNewFilter(Filter.Completed)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            {/* this button should be disabled if there are no completed todos */}
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              onClick={() => deleteCompleted()}
-              disabled={!isAnyCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
-        ) : (
-          ''
+        {todos.length > 0 && (
+          <Footer
+            count={completedTodosNumber}
+            selectedFilter={selectedFilter}
+            isAnyCompleted={isAnyCompleted}
+            onFilterChange={selectNewFilter}
+            onClearCompleted={deleteCompleted}
+          />
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => closeError()}
-        />
-        {/* show only one message at a time */}
-        {errorMessage}
-      </div>
+      <ErrorNotification message={errorMessage} onClose={closeError} />
     </div>
   );
 };
