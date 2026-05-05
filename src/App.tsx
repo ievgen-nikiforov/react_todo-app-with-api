@@ -41,9 +41,6 @@ export const App: React.FC = () => {
   const [changeStatusTodoId, setChangeStatusTodoId] = useState<number | null>(
     null,
   );
-  const [ addTodoLoading, setAddTodoLoading] = useState<number | null>(
-    null,
-  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [istoggleAll, setIsToggleAll] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
