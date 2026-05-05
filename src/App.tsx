@@ -45,7 +45,7 @@ export const App: React.FC = () => {
   const [istoggleAll, setIsToggleAll] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [tempTitle, setTempTitle] = useState('');
-const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const closeError = () => {
     setErrorMessage(ErrorMessage.Empty);
   };
@@ -99,42 +99,42 @@ const [tempTodo, setTempTodo] = useState<Todo | null>(null);
     return <UserWarning />;
   }
   const handleAddTodo = async (event: React.FormEvent) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const value = inputRef.current?.value.trim();
+    const value = inputRef.current?.value.trim();
 
-  if (!value) {
-    setErrorMessage(ErrorMessage.TitleError);
-    setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
-    return;
-  }
-
-  const temp: Todo = {
-    id: 0,
-    userId: USER_ID,
-    title: value,
-    completed: false,
-  };
-
-  setTempTodo(temp);
-  setLoading(true);
-
-  try {
-    const created = await addTodoApi(temp);
-
-    setTodos(prev => [...prev, created]);
-
-    if (inputRef.current) {
-      inputRef.current.value = '';
+    if (!value) {
+      setErrorMessage(ErrorMessage.TitleError);
+      setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
+      return;
     }
-  } catch {
-    setErrorMessage(ErrorMessage.AddError);
-    setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
-  } finally {
-    setTempTodo(null);
-    setLoading(false);
-  }
-};
+
+    const temp: Todo = {
+      id: 0,
+      userId: USER_ID,
+      title: value,
+      completed: false,
+    };
+
+    setTempTodo(temp);
+    setLoading(true);
+
+    try {
+      const created = await addTodoApi(temp);
+
+      setTodos(prev => [...prev, created]);
+
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+    } catch {
+      setErrorMessage(ErrorMessage.AddError);
+      setTimeout(() => setErrorMessage(ErrorMessage.Empty), 3000);
+    } finally {
+      setTempTodo(null);
+      setLoading(false);
+    }
+  };
   const deleteTodo = async (id: number) => {
     setDeleteTodoId(id);
     try {
@@ -364,30 +364,26 @@ const [tempTodo, setTempTodo] = useState<Todo | null>(null);
             </div>
           ))}
           {tempTodo && (
-  <div
-    data-cy="Todo"
-    className="todo"
-  >
-    <label className="todo__status-label">
-      <input
-        type="checkbox"
-        className="todo__status"
-        checked={false}
-        disabled
-      />
-    </label>
+            <div data-cy="Todo" className="todo">
+              <label className="todo__status-label">
+                <input
+                  type="checkbox"
+                  className="todo__status"
+                  checked={false}
+                  disabled
+                />
+              </label>
 
-    <span className="todo__title">{tempTodo.title}</span>
+              <span data-cy="TodoTitle" className="todo__title">
+                {tempTodo.title}
+              </span>
 
-    <div
-      data-cy="TodoLoader"
-      className="modal overlay is-active"
-    >
-      <div className="modal-background has-background-white-ter" />
-      <div className="loader" />
-    </div>
-  </div>
-)}
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Hide the footer if there are no todos */}
