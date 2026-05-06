@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Filter } from '../App';
+import { Filter } from '../types/Filter';
 
 type Props = {
   count: number;
@@ -9,7 +9,11 @@ type Props = {
   onFilterChange: (filter: Filter) => void;
   onClearCompleted: () => void;
 };
-
+const FILTERS = [
+  { value: Filter.All, label: 'All', href: '#/' },
+  { value: Filter.Active, label: 'Active', href: '#/active' },
+  { value: Filter.Completed, label: 'Completed', href: '#/completed' },
+];
 export const Footer: React.FC<Props> = ({
   count,
   selectedFilter,
@@ -23,38 +27,19 @@ export const Footer: React.FC<Props> = ({
     </span>
 
     <nav className="filter" data-cy="Filter">
-      <a
-        href="#/"
-        data-cy="FilterLinkAll"
-        className={classNames('filter__link', {
-          selected: selectedFilter === Filter.All,
-        })}
-        onClick={() => onFilterChange(Filter.All)}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        data-cy="FilterLinkActive"
-        className={classNames('filter__link', {
-          selected: selectedFilter === Filter.Active,
-        })}
-        onClick={() => onFilterChange(Filter.Active)}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        data-cy="FilterLinkCompleted"
-        className={classNames('filter__link', {
-          selected: selectedFilter === Filter.Completed,
-        })}
-        onClick={() => onFilterChange(Filter.Completed)}
-      >
-        Completed
-      </a>
+      {FILTERS.map(({ value, label, href }) => (
+        <a
+          key={value}
+          href={href}
+          data-cy={`FilterLink${label}`}
+          className={classNames('filter__link', {
+            selected: selectedFilter === value,
+          })}
+          onClick={() => onFilterChange(value)}
+        >
+          {label}
+        </a>
+      ))}
     </nav>
 
     <button

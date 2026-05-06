@@ -15,20 +15,8 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
-
-export enum Filter {
-  All = 'All',
-  Active = 'Active',
-  Completed = 'Completed',
-}
-enum ErrorMessage {
-  Empty = '',
-  LoadError = 'Unable to load todos',
-  TitleError = 'Title should not be empty',
-  AddError = 'Unable to add a todo',
-  DeleteError = 'Unable to delete a todo',
-  UpdateError = 'Unable to update a todo',
-}
+import { Filter } from './types/Filter';
+import { ErrorMessage } from './types/ErrorMassage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
